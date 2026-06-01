@@ -12,14 +12,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-// Define a classe JwtRequestFilter, que estende OncePerRequestFilter
+
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    // Define propriedades para armazenar instâncias de JwtUtil e UserDetailsService
+
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
-    // Construtor que inicializa as propriedades com instâncias fornecidas
+
     public JwtRequestFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
