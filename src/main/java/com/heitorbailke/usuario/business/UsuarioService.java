@@ -6,6 +6,7 @@ import com.heitorbailke.usuario.infrastructure.entity.Usuario;
 import com.heitorbailke.usuario.infrastructure.exceptions.ConflictException;
 import com.heitorbailke.usuario.infrastructure.exceptions.ResourceNotFoundException;
 import com.heitorbailke.usuario.infrastructure.repository.UsuarioRepository;
+import com.heitorbailke.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioConverter usuarioConverter;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public UsuarioDTO salvaUsuario(UsuarioDTO usuarioDTO){
         emailExiste(usuarioDTO.getEmail());
@@ -50,5 +52,25 @@ public class UsuarioService {
 
     public void deleteUsuarioPorEmail(String email) {
         usuarioRepository.deleteByEmail(email);
+    }
+
+    public UsuarioDTO atulizaDadosUsuario(String token, UsuarioDTO dto) {
+        // Aqui eu estou fazendo a busca do email do usuario através do token( tirar a obrigatoriedade do email)
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+
+        // Aqui eu coloquei uma verificação para que se acaso o usuario alterar a senha gerar uma criptografia da nova senha
+        dto.setSenha(dto.getSenha() != null ? passwordEncoder.encode(dto.getSenha()) : null );
+
+        //Nesse momento eu estou buscando os dados do usuario no banco de dados
+        Usuario usuarioEntity = usuarioRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("Email não localizado"));
+
+        //Aqui eu mesclei os dados que recebemos na requisição DTO com os dados do banco de dados
+        Usuario usuario = usuarioConverter.updateUsuario(dto, usuarioEntity);
+        //Salvou os dados do usuário convertido e depois pegou o retorno e conveteu para usuarioDTO
+
+        return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
+
+
     }
 }
