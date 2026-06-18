@@ -55,4 +55,9 @@ public class JwtUtil {
         // Verifica se o nome de usuário do token corresponde ao fornecido e se o token não está expirado
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
+
+    public String extrairEmailToken(String token) {
+        return extractUsername(token);
+    }
+
 }

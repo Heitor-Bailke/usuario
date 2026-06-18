@@ -1,8 +1,9 @@
 package com.heitorbailke.usuario.controller;
 
 import com.heitorbailke.usuario.business.UsuarioService;
+import com.heitorbailke.usuario.business.dto.EnderecoDTO;
+import com.heitorbailke.usuario.business.dto.TelefoneDTO;
 import com.heitorbailke.usuario.business.dto.UsuarioDTO;
-import com.heitorbailke.usuario.infrastructure.entity.Usuario;
 import com.heitorbailke.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<Usuario> buscaUsuarioPorEmail(@RequestParam("email") String email){
+    public ResponseEntity<UsuarioDTO> buscaUsuarioPorEmail(@RequestParam("email") String email){
         return ResponseEntity.ok(usuarioService.buscaUsuarioPorEmail(email));
     }
 
@@ -44,4 +45,29 @@ public class UsuarioController {
         return ResponseEntity.ok().build();
 
     }
+
+    @PutMapping("/endereco")
+    public ResponseEntity<EnderecoDTO> atualizaEndereco(@RequestBody EnderecoDTO dto,
+                                                        @RequestParam("id") Long id){
+        return ResponseEntity.ok(usuarioService.atualizaEndereco(id, dto));
+    }
+
+    @PutMapping("/telefone")
+    public ResponseEntity<TelefoneDTO> atualizaTelefone(@RequestBody TelefoneDTO dto,
+                                                        @RequestParam("id") Long id){
+        return ResponseEntity.ok(usuarioService.atualizaTelefone(id, dto));
+    }
+
+    @PostMapping("/endereco")
+    public ResponseEntity<EnderecoDTO> cadastraEndereco(@RequestBody EnderecoDTO dto,
+                                                        @RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(usuarioService.cadastraEndereco(token, dto));
+    }
+
+    @PostMapping("/telefone")
+    public ResponseEntity<TelefoneDTO> cadastraTelefone(@RequestBody TelefoneDTO dto,
+                                                        @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(usuarioService.cadastraTelefone(token, dto));
+    }
+
 }
